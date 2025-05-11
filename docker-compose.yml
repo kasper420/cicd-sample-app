@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  webapp:
+    # build: .
+    image: kasperhogent/webapp
+    ports:
+      - "3000:3000"
+    environment:
+      MYSQL_URL: mysql://webapp_user:webapp_password@database:3306/animals
+    depends_on:
+      - database
+    volumes:
+      - ./database:/app/database
+    restart: always  # container blijven hertarten zodat hij niet stopt na 1 mislukte poging
+
+  database:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: animals
+      MYSQL_USER: webapp_user
+      MYSQL_PASSWORD: webapp_password
+    volumes:
+      - db_data:/var/lib/mysql
+
+  test:
+    build: .
+    command: ["yarn", "test"]
+    environment:
+      API_URL: http://webapp:3000
+    depends_on:
+      - webapp
+
+volumes:
+  db_data:
