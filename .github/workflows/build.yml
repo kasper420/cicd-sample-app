@@ -25,3 +25,12 @@ jobs:
         run: yarn lint
         env:
           ESLINT_USE_FLAT_CONFIG: false
+    
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: kasperhogent/webapp:latest
+
